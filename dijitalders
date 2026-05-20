@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Kelime Oyunu</title>
+    <style>
+        body { background: #0f3460; color: white; font-family: sans-serif; text-align: center; padding-top: 50px; }
+        .kutu { background: #1a1a2e; padding: 40px; display: inline-block; border-radius: 20px; width: 450px; }
+        input { padding: 15px; width: 80%; font-size: 20px; margin: 10px; text-align: center; }
+        button { padding: 15px 40px; font-size: 20px; background: #e94560; color: white; border: none; cursor: pointer; }
+        #imza { position: absolute; top: 10px; right: 20px; color: #777; font-weight: bold; }
+        #sonucEkran { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: none; align-items: center; justify-content: center; font-size: 80px; background: rgba(0,0,0,0.95); z-index: 999; }
+    </style>
+</head>
+<body>
+
+    <div id="imza">Ensar Erdem</div>
+    <div id="anaKutu" class="kutu">
+        <input id="p1" placeholder="Oyuncu 1"><br>
+        <input id="p2" placeholder="Oyuncu 2"><br>
+        <input id="p3" placeholder="Oyuncu 3"><br>
+        <button id="baslatBtn">BAŞLAT</button>
+    </div>
+
+    <div id="sonucEkran"></div>
+
+    <script>
+        // Tam 30 adet kelime
+        const kelimeListesi = [
+            {en: "GENEROUS", tr: "comert"}, {en: "HONEST", tr: "durust"}, {en: "PUNCTUAL", tr: "dakik"},
+            {en: "OUTGOING", tr: "disa donuk"}, {en: "STUBBORN", tr: "inatci"}, {en: "RELIABLE", tr: "guvenilir"},
+            {en: "AMBITIOUS", tr: "hirsli"}, {en: "CREATIVE", tr: "yaratici"}, {en: "PATIENT", tr: "sabirli"},
+            {en: "TALENTED", tr: "yetenekli"}, {en: "BRAVE", tr: "cesur"}, {en: "KIND", tr: "kibar"},
+            {en: "LAZY", tr: "tembel"}, {en: "HARDWORKING", tr: "caliskan"}, {en: "SHY", tr: "utangac"},
+            {en: "INTELLIGENT", tr: "zeki"}, {en: "FUNNY", tr: "komik"}, {en: "CALM", tr: "sakin"},
+            {en: "CURIOUS", tr: "merakli"}, {en: "CAREFUL", tr: "dikkatli"}, {en: "LOYAL", tr: "sadik"},
+            {en: "SERIOUS", tr: "ciddi"}, {en: "GENTLE", tr: "nazik"}, {en: "STRONG", tr: "guclu"},
+            {en: "WISE", tr: "bilge"}, {en: "POLITE", tr: "kibar"}, {en: "RUDE", tr: "kaba"},
+            {en: "BUSY", tr: "mesgul"}, {en: "HAPPY", tr: "mutlu"}, {en: "SAD", tr: "uzgun"}
+        ];
+
+        let oyuncular = [], sira = 0, puanlar = [0, 0, 0], aktifKelime = {};
+
+        function temizle(str) {
+            return str.trim().toLowerCase().replace(/ç/g, 'c').replace(/ğ/g, 'g').replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ş/g, 's').replace(/ü/g, 'u');
+        }
+
+        document.getElementById("baslatBtn").onclick = function() {
+            oyuncular = [document.getElementById("p1").value, document.getElementById("p2").value, document.getElementById("p3").value];
+            if(oyuncular[0] && oyuncular[1] && oyuncular[2]) { oyunGoster(); } else { alert("Lütfen 3 isim girin!"); }
+        };
+
+        function oyunGoster() {
+            aktifKelime = kelimeListesi[Math.floor(Math.random() * kelimeListesi.length)];
+            document.getElementById("anaKutu").innerHTML = 
+                "<h1>Sıra: " + oyuncular[sira] + "</h1>" +
+                "<h3>Puan: " + puanlar[sira] + "/5</h3>" +
+                "<h1 style='color:#fbbf24'>" + aktifKelime.en + "</h1>" +
+                "<input id='tahmin' placeholder='Türkçesi?'>" +
+                "<br><button onclick='kontrolEt()'>GÖNDER</button>";
+        }
+
+        function kontrolEt() {
+            let tahmin = temizle(document.getElementById("tahmin").value);
+            let ekran = document.getElementById("sonucEkran");
+            ekran.style.display = "flex";
+
+            if(tahmin === aktifKelime.tr) {
+                ekran.innerHTML = "DOĞRU ✅";
+                ekran.style.color = "lightgreen";
+                puanlar[sira]++;
+            } else {
+                ekran.innerHTML = "YANLIŞ ❌<br><small style='font-size:30px'>Doğrusu: " + aktifKelime.tr + "</small>";
+                ekran.style.color = "red";
+            }
+
+            setTimeout(function() {
+                ekran.style.display = "none";
+                if(puanlar[sira] >= 5) {
+                    document.getElementById("anaKutu").innerHTML = "<h1>🏆 KAZANAN: " + oyuncular[sira] + "! 🏆</h1><button onclick='location.reload()'>YENİDEN</button>";
+                } else {
+                    sira = (sira + 1) % 3;
+                    oyunGoster();
+                }
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
